@@ -42,6 +42,22 @@ app.post("/api/login", (req, res) => {
   }
 });
 
+const varify = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    jwt.varify(token, "mySecretKey", (err, user) => {
+      if (err) {
+        return res.status(403).json("Token is not valid");
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).json("You are not authenticated!");
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Hello from node server🎇");
 });
